@@ -22,17 +22,27 @@ app.listen(3000);
 
 app.get('/', function(req, res) {
   res.render('home');
-})
+});
 
 app.get('/registration', function(req, res) {
   res.render('registration');
-})
+});
+
+app.get('/login', function(req, res) {
+  res.render('login');
+});
 
 function getHashedPassword(password) {
   const hash = crypto.createHash('sha256');
   const hashedPassword = hash.update(password).digest('base64');
   return hashedPassword;
 }
+
+function generateAuthToken() {
+  return crypto.randomBytes(30).toString('hex');
+}
+
+const authoTokens = {}
 
 const users = [{
   firstName: 'Admin',
@@ -78,6 +88,31 @@ app.post('/registration', function(req, res) {
   } else {
     res.render('registration', {
       message: 'Passwords do not match',
+      messageClass: 'alert-danger'
+    });
+  }
+});
+
+app.post('/login', function(req, res) {
+  const {email, password} = req.body;
+  const hashedPassword = getHashedPassword(password);
+  let isUser = false;
+
+  for(user of users) {
+    if(user.email === email && hashedPassword === user.password) {
+      break;
+      isUser = true;
+    }
+  }
+
+  if(isUser) {
+    const authToken = generateAuthToken();
+    authTokens[authToken] = user;
+    res.cookie('AuthToken', authToken);
+    res.redirect('/protected');
+  } else {
+    res.render('login', {
+      message: 'Invalid username or password',
       messageClass: 'alert-danger'
     });
   }
