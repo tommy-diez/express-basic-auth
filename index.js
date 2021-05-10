@@ -33,13 +33,13 @@ app.get('/login', function(req, res) {
 });
 
 app.get('/protected', function(req, res) {
-  if(req.user) {
+  if (req.user) {
     res.render('protected');
   } else {
     res.render('login', {
-            message: 'Please login to continue',
-            messageClass: 'alert-danger'
-        });
+      message: 'Please login to continue',
+      messageClass: 'alert-danger'
+    });
   }
 });
 
@@ -80,22 +80,20 @@ app.post('/registration', function(req, res) {
         });
         return;
       }
-
-      const hashedPassword = getHashedPassword(password);
-
-      users.push({
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword
-      });
-
-      res.render('login', {
-        message: 'Registration Complete. Please login to continue.',
-            messageClass: 'alert-success'
-      })
-
     }
+    const hashedPassword = getHashedPassword(password);
+
+    users.push({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword
+    });
+
+    res.render('login', {
+      message: 'Registration Complete. Please login to continue.',
+      messageClass: 'alert-success'
+    });
   } else {
     res.render('registration', {
       message: 'Passwords do not match',
@@ -105,18 +103,21 @@ app.post('/registration', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
-  const {email, password} = req.body;
+  const {
+    email,
+    password
+  } = req.body;
   const hashedPassword = getHashedPassword(password);
   let isUser = false;
 
-  for(user of users) {
-    if(user.email === email && hashedPassword === user.password) {
+  for (user of users) {
+    if (user.email === email && hashedPassword === user.password) {
       break;
       isUser = true;
     }
   }
 
-  if(isUser) {
+  if (isUser) {
     const authToken = generateAuthToken();
     authTokens[authToken] = user;
     res.cookie('AuthToken', authToken);
@@ -127,9 +128,4 @@ app.post('/login', function(req, res) {
       messageClass: 'alert-danger'
     });
   }
-  app.use((req, res, next) => {
-      const authToken = req.cookies['authToken'];
-      req.user = authTokens[authToken];
-      next();
-  });
 });
