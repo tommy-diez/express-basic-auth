@@ -32,6 +32,17 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
+app.get('/protected', function(req, res) {
+  if(req.user) {
+    res.render('protected');
+  } else {
+    res.render('login', {
+            message: 'Please login to continue',
+            messageClass: 'alert-danger'
+        });
+  }
+});
+
 function getHashedPassword(password) {
   const hash = crypto.createHash('sha256');
   const hashedPassword = hash.update(password).digest('base64');
@@ -116,4 +127,9 @@ app.post('/login', function(req, res) {
       messageClass: 'alert-danger'
     });
   }
+  app.use((req, res, next) => {
+      const authToken = req.cookies['authToken'];
+      req.user = authTokens[authToken];
+      next();
+  });
 });
