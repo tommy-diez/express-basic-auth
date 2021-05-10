@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-    const authToken = req.cookies['AuthToken'];
-    req.user = authTokens[authToken];
-    next();
+  const authToken = req.cookies['AuthToken'];
+  req.user = authTokens[authToken];
+  next();
 });
 
 app.engine('hbs', handleBars({
@@ -117,8 +117,8 @@ app.post('/login', function(req, res) {
   const hashedPassword = getHashedPassword(password);
 
   const user = users.find(u => {
-        return u.email === email && hashedPassword === u.password
-    });
+    return u.email === email && hashedPassword === u.password
+  });
 
   if (user) {
     const authToken = generateAuthToken();
