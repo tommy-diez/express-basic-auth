@@ -12,6 +12,12 @@ app.use(bodyParser.urlencoded({
 
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+    const authToken = req.cookies['AuthToken'];
+    req.user = authTokens[authToken];
+    next();
+});
+
 app.engine('hbs', handleBars({
   extname: '.hbs'
 }));
@@ -53,7 +59,7 @@ function generateAuthToken() {
   return crypto.randomBytes(30).toString('hex');
 }
 
-const authoTokens = {}
+const authTokens = {}
 
 const users = [{
   firstName: 'Admin',
@@ -107,17 +113,14 @@ app.post('/login', function(req, res) {
     email,
     password
   } = req.body;
+
   const hashedPassword = getHashedPassword(password);
-  let isUser = false;
 
-  for (user of users) {
-    if (user.email === email && hashedPassword === user.password) {
-      break;
-      isUser = true;
-    }
-  }
+  const user = users.find(u => {
+        return u.email === email && hashedPassword === u.password
+    });
 
-  if (isUser) {
+  if (user) {
     const authToken = generateAuthToken();
     authTokens[authToken] = user;
     res.cookie('AuthToken', authToken);
