@@ -1,0 +1,23 @@
+<div>
+  <div class="col-md-4">
+    {{#if message}}
+      <div class="alert {{messageClass}}" role="alert">
+        {{message}}
+      </div>
+    {{/if}}
+  </div>
+
+  <form class="col-md-4" method="POST" action="/registration">
+    <input type="text" name="firstName" placeholder="First name" />
+    <br>
+    <input type="text" name="lastName" placeholder="Last name" />
+    <br>
+    <input type="email" name="email" placeholder="Email" />
+    <br>
+    <input type="password" name="password" placeholder="Password" />
+    <br>
+    <input type="password" name="confirmPassword" placeholder="Confirm Password" />
+    <br>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
